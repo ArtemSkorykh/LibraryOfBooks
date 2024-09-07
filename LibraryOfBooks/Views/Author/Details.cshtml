@@ -1,0 +1,28 @@
+﻿@model LibraryOfBooks.Models.Author
+
+<h2>Details for @Model.FirstName @Model.LastName</h2>
+
+<p><strong>Full Name:</strong> @Model.FirstName @Model.LastName</p>
+<p><strong>Bio:</strong> @Model.Bio</p>
+
+<h3>Books</h3>
+@if (Model.Books.Any())
+
+{
+    <ul>
+        @foreach (var book in Model.Books)
+
+        {
+            <li>@book.Title (@book.Year)</li>
+        }
+    </ul>
+}
+
+else
+
+{
+    <p>This author has no books.</p>
+}
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+<a asp-action="Index">Back to List</a>

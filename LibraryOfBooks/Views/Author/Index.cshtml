@@ -1,0 +1,48 @@
+﻿@model IEnumerable<LibraryOfBooks.Models.Author>
+
+<h2>Authors List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Bio</th>
+            <th>Books</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var author in Model)
+
+        {
+            <tr>
+                <td>@author.FirstName</td>
+                <td>@author.LastName</td>
+                <td>@author.Bio</td>
+                <td>
+                    @if (author.Books != null && author.Books.Any())
+                    {
+                        <ul>
+                            @foreach (var book in author.Books)
+                            {
+                                <li>@book.Title (Published: @book.Year)</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No books</p>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@author.Id">View</a> |
+                    <a asp-action="Edit" asp-route-id="@author.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@author.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Add New Author</a>
