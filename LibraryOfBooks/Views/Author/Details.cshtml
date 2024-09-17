@@ -1,19 +1,21 @@
 ﻿@model LibraryOfBooks.Models.Author
 
-<h2>Details for @Model.FirstName @Model.LastName</h2>
+<h2>Author Details</h2>
 
-<p><strong>Full Name:</strong> @Model.FirstName @Model.LastName</p>
-<p><strong>Bio:</strong> @Model.Bio</p>
+<div>
+    <h4>@Model.FirstName @Model.LastName</h4>
+    <p>@Model.Bio</p>
+</div>
 
-<h3>Books</h3>
-@if (Model.Books.Any())
+@if (Model.Books != null && Model.Books.Any())
 
 {
+    <h4>Books</h4>
     <ul>
         @foreach (var book in Model.Books)
 
         {
-            <li>@book.Title (@book.Year)</li>
+            <li>@book.Title</li>
         }
     </ul>
 }
@@ -21,7 +23,7 @@
 else
 
 {
-    <p>This author has no books.</p>
+    <p>No books found.</p>
 }
 
 <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |

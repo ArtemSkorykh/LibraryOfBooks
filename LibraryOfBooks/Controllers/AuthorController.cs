@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryOfBooks.Controllers
 {
+    [Route("authors")]
     public class AuthorController : Controller
     {
         private readonly LibraryDbContext _context;
@@ -14,24 +15,43 @@ namespace LibraryOfBooks.Controllers
             _context = context;
         }
 
+        // GET: /authors
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var authors = await _context.Authors
-                .Include(a => a.Books) 
-                .ToListAsync();
+            var authors = await _context.Authors.ToListAsync();
             return View(authors);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        // GET: /authors/create
+        [HttpGet("create")]
+        public IActionResult Create()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            return View();
+        }
 
+        // POST: /authors/create
+        [HttpPost("create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Author author)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(author);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(author);
+        }
+
+        // GET: /authors/details/5
+        [HttpGet("details/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
             var author = await _context.Authors
-                .Include(a => a.Books)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Books)  // Убедитесь, что вы загружаете книги
+                .FirstOrDefaultAsync(a => a.Id == id);
+
             if (author == null)
             {
                 return NotFound();
@@ -40,38 +60,10 @@ namespace LibraryOfBooks.Controllers
             return View(author);
         }
 
-        public IActionResult Create()
+        // GET: /authors/edit/5
+        [HttpGet("edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,Bio")] Author author)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Add(author);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "An error occurred while saving the author.");
-                }
-            }
-            return View(author);
-        }
-
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var author = await _context.Authors.FindAsync(id);
             if (author == null)
             {
@@ -80,9 +72,10 @@ namespace LibraryOfBooks.Controllers
             return View(author);
         }
 
-        [HttpPost]
+        // POST: /authors/edit/5
+        [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Bio")] Author author)
+        public async Task<IActionResult> Edit(int id, Author author)
         {
             if (id != author.Id)
             {
@@ -112,34 +105,26 @@ namespace LibraryOfBooks.Controllers
             return View(author);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        // GET: /authors/delete/5
+        [HttpGet("delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var author = await _context.Authors.FindAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
-
             return View(author);
         }
 
-        [HttpPost, ActionName("Delete")]
+        // POST: /authors/delete/5
+        [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var author = await _context.Authors.FindAsync(id);
-            if (author != null)
-            {
-                _context.Authors.Remove(author);
-                await _context.SaveChangesAsync();
-            }
-
+            _context.Authors.Remove(author);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
