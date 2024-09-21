@@ -1,9 +1,10 @@
 ﻿using LibraryOfBooks.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryOfBooks.Data
 {
-    public class LibraryDbContext : DbContext
+    public class LibraryDbContext : IdentityDbContext<User>
     {
         public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
         {
@@ -13,7 +14,9 @@ namespace LibraryOfBooks.Data
         public DbSet<Book> Books { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { 
+        {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Author)
                 .WithMany(a => a.Books)
